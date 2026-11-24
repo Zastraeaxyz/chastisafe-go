@@ -48,6 +48,11 @@ func TestLogEntryText(t *testing.T) {
 			entry: LogEntry{Actor: 2, EventType: 999},
 			want:  "Lockee unknown event",
 		},
+		{
+			name:  "note",
+			entry: LogEntry{Actor: 2, EventType: 52, Info: "hello"},
+			want:  "Lockee hello",
+		},
 	}
 
 	for _, test := range tests {

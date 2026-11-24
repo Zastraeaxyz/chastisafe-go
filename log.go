@@ -16,6 +16,12 @@ func LogEntryText(entry LogEntry) string {
 		b.WriteString("Lock started new task roller")
 	case 47:
 		b.WriteString("Pillory tally is")
+	case 52:
+		b.WriteString(logActor(entry))
+		if info := strings.TrimSpace(entry.Info); info != "" {
+			b.WriteString(" ")
+			b.WriteString(info)
+		}
 	default:
 		b.WriteString(logActor(entry))
 		if verb := logEventVerb(entry.EventType); verb != "" {
@@ -66,7 +72,7 @@ func LogEntryText(entry LogEntry) string {
 		if entry.Info != "" {
 			fmt.Fprintf(&b, "; %s", entry.Info)
 		}
-	case 50, 52:
+	case 50:
 		if entry.Info != "" {
 			fmt.Fprintf(&b, " %s", entry.Info)
 		}
