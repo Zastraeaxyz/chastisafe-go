@@ -129,7 +129,7 @@ func LockStateText(lock *LoadedLock) string {
 		parts = append(parts, "ready to unlock")
 	}
 	if lock.IsTimerLock() && !lock.IsFrozen() {
-		parts = append(parts, FormatShortDuration(lock.Remaining())+" left")
+		parts = append(parts, "unlocks "+timestampIn(lock.Remaining()))
 	}
 	if lock.IsCardLock() {
 		if cards := lock.CardsRemaining(); cards > 0 {
@@ -140,12 +140,12 @@ func LockStateText(lock *LoadedLock) string {
 		}
 	}
 	if next := lock.NextCheckInIn(); next > 0 {
-		parts = append(parts, "check-in in "+FormatShortDuration(next))
+		parts = append(parts, "check-in "+timestampIn(next))
 	} else if lock.CheckInPeriod > 0 {
 		parts = append(parts, "check-in due")
 	}
 	if hygiene := lock.NextHygieneIn(); hygiene > 0 {
-		parts = append(parts, "hygiene in "+FormatShortDuration(hygiene))
+		parts = append(parts, "hygiene "+timestampIn(hygiene))
 	}
 	if len(parts) == 0 {
 		parts = append(parts, lock.Status())
@@ -512,17 +512,17 @@ func LockDetailText(view *LockView) string {
 	}
 	b.WriteString("\n")
 	if lock.IsTimerLock() {
-		fmt.Fprintf(&b, "Remaining: %s\n", FormatDuration(lock.Remaining()))
+		fmt.Fprintf(&b, "Unlocks: %s\n", timestampIn(lock.Remaining()))
 	}
 	if lock.IsCardLock() {
-		fmt.Fprintf(&b, "Cards: %s\n", DeckSummary(lock.Deck))
+		fmt.Fprintf(&b, "Cards: %s\n", deckText(lock))
 		fmt.Fprintf(&b, "Draws available: %d", lock.DrawsAvailable())
 		if lock.MaxPicks > 0 {
 			fmt.Fprintf(&b, " of %d", lock.MaxPicks)
 		}
 		b.WriteString("\n")
 		if wait := lock.NextPickIn(); wait > 0 {
-			fmt.Fprintf(&b, "Next draw in %s\n", FormatDuration(wait))
+			fmt.Fprintf(&b, "Next draw: %s\n", timestampIn(wait))
 		}
 	}
 	if lock.CheckInPeriod > 0 {
@@ -532,7 +532,7 @@ func LockDetailText(view *LockView) string {
 		)
 	}
 	if lock.TimeToHygieneUnlock > 0 {
-		fmt.Fprintf(&b, "Hygiene unlock in %s\n", FormatShortDuration(lock.NextHygieneIn()))
+		fmt.Fprintf(&b, "Hygiene unlock: %s\n", timestampIn(lock.NextHygieneIn()))
 	}
 	if lock.AutoResetsRemaining > 0 {
 		fmt.Fprintf(&b, "Auto resets remaining: %d\n", lock.AutoResetsRemaining)
@@ -596,7 +596,27 @@ func displayYesNo(value string) string {
 
 func nextInText(duration time.Duration) string {
 	if duration > 0 {
-		return "next in " + FormatShortDuration(duration)
+		return "next " + timestampIn(duration)
 	}
 	return "due now"
+}
+
+// timestampIn renders a moment relative to now as a Discord timestamp.
+func timestampIn(duration time.Duration) string {
+	return fmt.Sprintf("<t:%d:R>", time.Now().Add(duration).Unix())
+}
+
+// deckText prefers the deck summary and falls back to the lock's card count
+// when ChastiSafe hides the deck.
+func deckText(lock *LoadedLock) string {
+	if lock == nil {
+		return "no cards"
+	}
+	if summary := DeckSummary(lock.Deck); summary != "no cards" {
+		return summary
+	}
+	if cards := lock.CardsRemaining(); cards > 0 {
+		return fmt.Sprintf("%d card%s", cards, PluralSuffix(cards))
+	}
+	return "no cards"
 }
