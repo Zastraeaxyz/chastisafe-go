@@ -21,7 +21,12 @@ func TestLogEntryText(t *testing.T) {
 		{
 			name:  "lockee picked yellow three",
 			entry: LogEntry{Actor: 2, EventType: 6, Card: "3", Amount: 1},
-			want:  "Lockee picked 1 +3 red",
+			want:  "Lockee picked 1 yellow+3",
+		},
+		{
+			name:  "lockee picked yellow two",
+			entry: LogEntry{Actor: 2, EventType: 6, Card: "2", Amount: 1},
+			want:  "Lockee picked 1 yellow+2",
 		},
 		{
 			name:  "dice pick",

@@ -196,7 +196,22 @@ func logCardName(letter string) string {
 		return ""
 	}
 	if card, ok := CardForLetter(letter[0]); ok {
-		return card.Short()
+		switch card {
+		case CardYellowP1:
+			return "yellow+1"
+		case CardYellowP2:
+			return "yellow+2"
+		case CardYellowP3:
+			return "yellow+3"
+		case CardYellowM1:
+			return "yellow-1"
+		case CardYellowM2:
+			return "yellow-2"
+		case CardYellow, CardYellowUK, CardYellowRN:
+			return "yellow+?"
+		default:
+			return card.Short()
+		}
 	}
 	return letter
 }
