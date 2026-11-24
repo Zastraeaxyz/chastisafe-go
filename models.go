@@ -1,6 +1,7 @@
 package chastisafe
 
 import (
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"strconv"
@@ -328,6 +329,16 @@ func (l *LoadedLock) NextPickIn() time.Duration {
 	return time.Duration(l.Wait) * time.Second
 }
 
+// DrawsAvailable is the number of card draws the lockee may take right now.
+// ChastiSafe reports this count in the picks field. It is zero for timer
+// locks and for a card lock whose next draw has not accrued yet.
+func (l *LoadedLock) DrawsAvailable() int {
+	if l == nil || !l.IsCardLock() || l.Picks <= 0 {
+		return 0
+	}
+	return l.Picks
+}
+
 // NextCheckInIn is the wait before the next required check-in.
 func (l *LoadedLock) NextCheckInIn() time.Duration {
 	if l.TimeToNextCheckIn > 0 {
@@ -426,12 +437,15 @@ func UnlockReasonString(reason int) string {
 
 // LogEntry is one lock history event.
 type LogEntry struct {
-	Timestamp Time   `json:"timestamp"`
-	Actor     int    `json:"actor"`
-	EventType int    `json:"event_type"`
-	Amount    int    `json:"amount"`
-	Hidden    int    `json:"hidden"`
-	Card      string `json:"card,omitempty"`
+	Timestamp Time            `json:"timestamp"`
+	Actor     int             `json:"actor"`
+	EventType int             `json:"event_type"`
+	Amount    int             `json:"amount"`
+	Hidden    int             `json:"hidden"`
+	Card      string          `json:"card,omitempty"`
+	Bot       string          `json:"bot,omitempty"`
+	Info      string          `json:"info,omitempty"`
+	Details   json.RawMessage `json:"details,omitempty"`
 }
 
 // TaskItem is one task in a task roller.

@@ -516,11 +516,14 @@ func LockDetailText(view *LockView) string {
 	}
 	if lock.IsCardLock() {
 		fmt.Fprintf(&b, "Cards: %s\n", DeckSummary(lock.Deck))
-		fmt.Fprintf(&b, "Picks: %d", lock.Picks)
+		fmt.Fprintf(&b, "Draws available: %d", lock.DrawsAvailable())
 		if lock.MaxPicks > 0 {
-			fmt.Fprintf(&b, "/%d", lock.MaxPicks)
+			fmt.Fprintf(&b, " of %d", lock.MaxPicks)
 		}
 		b.WriteString("\n")
+		if wait := lock.NextPickIn(); wait > 0 {
+			fmt.Fprintf(&b, "Next draw in %s\n", FormatDuration(wait))
+		}
 	}
 	if lock.CheckInPeriod > 0 {
 		fmt.Fprintf(&b, "Check-in: every %s, %s\n",
