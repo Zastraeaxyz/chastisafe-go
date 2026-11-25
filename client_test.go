@@ -243,6 +243,22 @@ func TestAddTimePayload(t *testing.T) {
 	}
 }
 
+func TestRate(t *testing.T) {
+	client := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet || r.URL.Path != "/rate/4/lock-id" {
+			t.Errorf("request = %s %s", r.Method, r.URL.Path)
+		}
+		_, _ = w.Write([]byte(`{"status":1,"locked":false}`))
+	})
+
+	if err := client.Rate(context.Background(), "lock-id", 4); err != nil {
+		t.Fatalf("Rate: %v", err)
+	}
+	if err := client.Rate(context.Background(), "lock-id", 6); err == nil {
+		t.Fatal("Rate accepted an out-of-range rating")
+	}
+}
+
 func TestUpdatePayloads(t *testing.T) {
 	cases := []struct {
 		name string

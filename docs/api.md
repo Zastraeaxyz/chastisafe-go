@@ -30,6 +30,7 @@
 | --- | --- | --- |
 | POST | `/load` | Start a lock from a template |
 | GET | `/open/{id}` | Open a ready lock and reveal its code |
+| GET | `/rate/{rating}/{id}` | Rate a completed lock from 1 to 5 |
 | GET | `/abandon/{id}` | End a lock without a code |
 | GET | `/reset/{id}` | Restart a lock |
 | GET | `/random/{id}` | Random unlock attempt |
