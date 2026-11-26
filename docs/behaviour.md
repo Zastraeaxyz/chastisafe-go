@@ -48,6 +48,9 @@ keyholder writes with `locknotfound`.
 - Loaded-lock `frozenbykh`, `hidden` and `cumulative` require JSON booleans.
   Template `hidden`, `startfrozen` and `cumulative` are the strings `yes`,
   `no` or `randomize`.
+- `POST /simulate` returns `hiddenlocksimulationnotshowntolockee` when the
+  keyholder has hidden the simulation from the lockee. `errors.Is(err,
+  ErrSimulationDisabled)` detects it.
 - `POST /trust` is a lockee action. It works with a duration in seconds.
   Calling it as the keyholder returns an internal error.
 - `SetPurpose` works for an allowed purpose. In testing, changing a lock whose

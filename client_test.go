@@ -503,6 +503,25 @@ func TestAPIReasonError(t *testing.T) {
 	}
 }
 
+func TestSimulateDisabled(t *testing.T) {
+	client := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/simulate" {
+			t.Errorf("path = %q", r.URL.Path)
+		}
+		_, _ = io.WriteString(w, `{"status":1,"reason":"hiddenlocksimulationnotshowntolockee"}`)
+	})
+	_, err := client.Simulate(context.Background(), "template-id")
+	if !errors.Is(err, ErrSimulationDisabled) {
+		t.Fatalf("error = %v, want ErrSimulationDisabled", err)
+	}
+	if IsReason(err, "locknotfound") {
+		t.Fatalf("simulation error matched locknotfound")
+	}
+	if !IsReason(err, "hiddenlocksimulationnotshowntolockee") {
+		t.Fatalf("IsReason = false for %v", err)
+	}
+}
+
 func TestHTTPError(t *testing.T) {
 	client := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
