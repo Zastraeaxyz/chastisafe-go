@@ -454,12 +454,13 @@ func (c *Client) StartPillory(ctx context.Context, lockID, taskRollerID ID) erro
 
 // Rate gives a completed lock a rating from 1 to 5.
 func (c *Client) Rate(ctx context.Context, lockID ID, rating int) error {
-	const op = "GET /rate/{rating}/{id}"
+	const op = "GET /rate{rating}/{id}"
 	if rating < 1 || rating > 5 {
 		return fmt.Errorf("%s: rating %d out of range", op, rating)
 	}
 	// The app treats any 200 as success; the body is not an action status.
-	_, err := c.get(ctx, "/rate/"+strconv.Itoa(rating)+"/"+url.PathEscape(string(lockID)))
+	// The rating is a path suffix, not a segment: /rate5/{id}, not /rate/5/{id}.
+	_, err := c.get(ctx, "/rate"+strconv.Itoa(rating)+"/"+url.PathEscape(string(lockID)))
 	return err
 }
 

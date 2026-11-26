@@ -245,7 +245,7 @@ func TestAddTimePayload(t *testing.T) {
 
 func TestRate(t *testing.T) {
 	client := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet || r.URL.Path != "/rate/4/lock-id" {
+		if r.Method != http.MethodGet || r.URL.Path != "/rate4/lock-id" {
 			t.Errorf("request = %s %s", r.Method, r.URL.Path)
 		}
 		_, _ = w.Write([]byte(`{"status":1,"locked":false}`))
