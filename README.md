@@ -35,6 +35,24 @@ for _, lock := range locks {
 
 The token is your ChastiSafe developer code. Treat it like a password.
 
+## CLI
+
+`cmd` is a small proof of concept and developer utility. It reads the
+developer code from `CHASTISAFE_DEV_CODE`, never from a flag:
+
+```sh
+CHASTISAFE_DEV_CODE=... go run ./cmd --help
+CHASTISAFE_DEV_CODE=... go run ./cmd locks latest
+CHASTISAFE_DEV_CODE=... go run ./cmd templates simulate <template-id> --runs 3
+CHASTISAFE_DEV_CODE=... go run ./cmd locks load <template-id> --code 1234 --purpose CHASTITY
+```
+
+It covers basic template and lock CRUD plus common lock actions, grouped under
+`templates` and `locks`. Run `--help` for the full command tree. Write commands
+print a dry run and ask for y/n confirmation. Use `--dry-run` to print only, or
+`--yes` to apply without prompting. Template JSON can be passed inline or with
+`@path`. Set `CHASTISAFE_BASE_URL` to point at a local test server.
+
 ## Documentation
 
 - [Usage](docs/usage.md): authentication, the client and service layers, stats
