@@ -41,11 +41,13 @@ The token is your ChastiSafe developer code. Treat it like a password.
 developer code from `CHASTISAFE_DEV_CODE`, never from a flag:
 
 ```sh
-CHASTISAFE_DEV_CODE=... go run ./cmd --help
-CHASTISAFE_DEV_CODE=... go run ./cmd locks latest
-CHASTISAFE_DEV_CODE=... go run ./cmd templates simulate <template-id> --runs 3
-CHASTISAFE_DEV_CODE=... go run ./cmd locks load <template-id> --code 1234 --purpose CHASTITY
+CHASTISAFE_DEV_CODE=... go run cmd/main.go --help
+CHASTISAFE_DEV_CODE=... go run cmd/main.go locks latest
+CHASTISAFE_DEV_CODE=... go run cmd/main.go templates simulate <template-id> --runs 3
+CHASTISAFE_DEV_CODE=... go run cmd/main.go locks load <template-id> --code 1234 --purpose CHASTITY
 ```
+
+`go run ./cmd` is equivalent.
 
 It covers basic template and lock CRUD plus common lock actions, grouped under
 `templates` and `locks`. Run `--help` for the full command tree. Write commands

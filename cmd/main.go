@@ -3,10 +3,12 @@ package main
 import (
 	"fmt"
 	"os"
+
+	"github.com/zastraeaxyz/chastisafe-go/internal/cli"
 )
 
 func main() {
-	if err := Execute(); err != nil {
+	if err := cli.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
