@@ -91,6 +91,63 @@ func TestDraws(t *testing.T) {
 	}
 }
 
+func TestIsFrozen(t *testing.T) {
+	cases := []struct {
+		name string
+		lock *LoadedLock
+		want bool
+	}{
+		{
+			name: "nil lock",
+			lock: nil,
+			want: false,
+		},
+		{
+			name: "keyholder freeze without draws",
+			lock: &LoadedLock{Type: "card", FrozenByKeyholder: true, Picks: 0},
+			want: true,
+		},
+		{
+			name: "keyholder freeze with a draw available",
+			lock: &LoadedLock{Type: "card", FrozenByKeyholder: true, Picks: 1},
+			want: true,
+		},
+		{
+			name: "card freeze without draws",
+			lock: &LoadedLock{Type: "card", FrozenByCard: true, Picks: 0},
+			want: true,
+		},
+		{
+			name: "leftover card flag with a draw available",
+			lock: &LoadedLock{Type: "card", FrozenByCard: true, Picks: 1},
+			want: false,
+		},
+		{
+			name: "no flags",
+			lock: &LoadedLock{Type: "card", Picks: 2},
+			want: false,
+		},
+		{
+			name: "timer keyholder freeze",
+			lock: &LoadedLock{Type: "timer", FrozenByKeyholder: true},
+			want: true,
+		},
+		{
+			name: "timer with only a card flag",
+			lock: &LoadedLock{Type: "timer", FrozenByCard: true},
+			want: false,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := tc.lock.IsFrozen(); got != tc.want {
+				t.Fatalf("IsFrozen = %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
+
 func TestPurposeMask(t *testing.T) {
 	mask := PurposeMaskTest | PurposeMaskChastity | PurposeMaskBondage | PurposeMaskTask
 	if !mask.Has(PurposeTest) || !mask.Has(PurposeChastity) || !mask.Has(PurposeBondage) || !mask.Has(PurposeTask) {

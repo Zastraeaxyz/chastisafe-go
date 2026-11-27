@@ -316,8 +316,19 @@ func (l *LoadedLock) IsSelfLock() bool {
 	return strings.EqualFold(l.Keyholder, "<self>") || l.KeyholderID == "0" || l.KeyholderID == ""
 }
 
-// IsFrozen reports whether the lock is frozen by either source.
-func (l *LoadedLock) IsFrozen() bool { return l.FrozenByKeyholder || l.FrozenByCard }
+// IsFrozen reports whether a freeze currently blocks the lock. ChastiSafe can
+// leave FrozenByCard set after a card freeze ends, until the next pick, so a
+// card freeze only counts while no draw is available. A keyholder freeze always
+// counts.
+func (l *LoadedLock) IsFrozen() bool {
+	if l == nil {
+		return false
+	}
+	if l.FrozenByKeyholder {
+		return true
+	}
+	return l.IsCardLock() && l.FrozenByCard && l.DrawsAvailable() == 0
+}
 
 // Remaining is the timer remaining on a timer lock.
 func (l *LoadedLock) Remaining() time.Duration {

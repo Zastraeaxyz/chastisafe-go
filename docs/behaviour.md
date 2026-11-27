@@ -48,6 +48,10 @@ keyholder writes with `locknotfound`.
 - Loaded-lock `frozenbykh`, `hidden` and `cumulative` require JSON booleans.
   Template `hidden`, `startfrozen` and `cumulative` are the strings `yes`,
   `no` or `randomize`.
+- `frozenByCard` can stay `true` after a card freeze ends, until the next pick,
+  and `freezeDuration` is not a reliable active-freeze signal. The app draws
+  whenever a pick is available, so `IsFrozen` treats a card freeze as active
+  only while `DrawsAvailable()` is zero. A keyholder freeze always counts.
 - `POST /simulate` returns `hiddenlocksimulationnotshowntolockee` when the
   keyholder has hidden the simulation from the lockee. `errors.Is(err,
   ErrSimulationDisabled)` detects it.
